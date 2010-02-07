@@ -56,6 +56,10 @@
     <Compile Include="ShippingRatesClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ext\Logos.Utility\src\Logos.Utility\Logos.Utility.csproj">
+      <Project>{F0BB7927-B2DB-4E37-9807-8E697CA09F32}</Project>
+      <Name>Logos.Utility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Service\Service.csproj">
       <Project>{F3102535-9CA4-4E8A-A473-390A4A3BAB42}</Project>
       <Name>Service</Name>

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "net35\src\Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Driver", "net35\src\Driver\Driver.csproj", "{95311973-C586-4B4F-AEAE-3F2DDBAEE058}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logos.Utility", "net35\ext\Logos.Utility\src\Logos.Utility\Logos.Utility.csproj", "{F0BB7927-B2DB-4E37-9807-8E697CA09F32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{95311973-C586-4B4F-AEAE-3F2DDBAEE058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95311973-C586-4B4F-AEAE-3F2DDBAEE058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95311973-C586-4B4F-AEAE-3F2DDBAEE058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using Logos.Utility.ServiceModel;
 using Service;
 
 namespace Driver
@@ -25,8 +26,20 @@ namespace Driver
 
 		public void Dispose()
 		{
-			((ICommunicationObject) m_channel).Close();
-			((ICommunicationObject) m_factory).Close();
+			if (m_channel != null)
+			{
+				((ICommunicationObject) m_channel).CloseOrAbort();
+				m_channel = null;
+
+				m_factory.CloseOrAbort();
+				m_factory = null;
+			}
+		}
+
+		private void VerifyNotDisposed()
+		{
+			if (m_channel == null)
+				throw new ObjectDisposedException(GetType().Name);
 		}
 
 		ChannelFactory<IShippingRatesProvider> m_factory;

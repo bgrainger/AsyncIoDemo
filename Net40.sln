@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "net40\src\Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Driver", "net40\src\Driver\Driver.csproj", "{50FCD900-90BA-4307-8330-3E565146359F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logos.Utility", "net40\ext\Logos.Utility\src\Logos.Utility\Logos.Utility.csproj", "{F0BB7927-B2DB-4E37-9807-8E697CA09F32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Mixed Platforms.Build.0 = Release|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|x86.ActiveCfg = Release|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|x86.Build.0 = Release|x86
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F0BB7927-B2DB-4E37-9807-8E697CA09F32}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
