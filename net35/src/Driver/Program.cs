@@ -17,7 +17,12 @@ namespace Driver
 
 				using (ShippingRatesClient client = new ShippingRatesClient(CreateBinding(), s_baseUri))
 				{
-					foreach (ShippingRate rate in client.GetShippingRates(1.1m, "98226", "90210"))
+					foreach (ShippingRate rate in client.GetShippingRatesSync(1.1m, "98226", "90210"))
+					{
+						Console.WriteLine("Name: {0} -- Cost: {1:C}", rate.Name, rate.Cost);
+					}
+
+					foreach (ShippingRate rate in client.GetShippingRatesAsync(1.1m, "98226", "90210"))
 					{
 						Console.WriteLine("Name: {0} -- Cost: {1:C}", rate.Name, rate.Cost);
 					}

@@ -11,7 +11,7 @@ namespace Driver
 	/// <see cref="ShippingRatesClient"/> encapsulates a ChannelFactory and a Channel for the
 	/// <see cref="IShippingRatesProvider"/> interface.
 	/// </summary>
-	class ShippingRatesClient : IShippingRatesProvider, IDisposable
+	class ShippingRatesClient : IDisposable
 	{
 		public ShippingRatesClient(Binding binding, Uri uri)
 		{
@@ -19,9 +19,17 @@ namespace Driver
 			m_channel = m_factory.CreateChannel();
 		}
 
-		public ShippingRate[] GetShippingRates(decimal weight, string originZipCode, string destinationZipCode)
+		public ShippingRate[] GetShippingRatesSync(decimal weight, string originZipCode, string destinationZipCode)
 		{
-			return m_channel.GetShippingRates(weight, originZipCode, destinationZipCode);
+			VerifyNotDisposed();
+			return m_channel.GetShippingRatesSync(weight, originZipCode, destinationZipCode);
+		}
+
+		public ShippingRate[] GetShippingRatesAsync(decimal weight, string originZipCode, string destinationZipCode)
+		{
+			VerifyNotDisposed();
+			IAsyncResult ar = m_channel.BeginGetShippingRatesAsync(weight, originZipCode, destinationZipCode, null, null);
+			return m_channel.EndGetShippingRatesAsync(ar);
 		}
 
 		public void Dispose()

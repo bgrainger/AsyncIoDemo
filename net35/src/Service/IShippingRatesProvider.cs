@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.ServiceModel;
 
 namespace Service
@@ -7,6 +8,10 @@ namespace Service
 	public interface IShippingRatesProvider
 	{
 		[OperationContract]
-		ShippingRate[] GetShippingRates(decimal weight, string originZipCode, string destinationZipCode);
+		ShippingRate[] GetShippingRatesSync(decimal weight, string originZipCode, string destinationZipCode);
+
+		[OperationContract(AsyncPattern=true)]
+		IAsyncResult BeginGetShippingRatesAsync(decimal weight, string originZipCode, string destinationZipCode, AsyncCallback callback, object state);
+		ShippingRate[] EndGetShippingRatesAsync(IAsyncResult asyncResult);
 	}
 }
