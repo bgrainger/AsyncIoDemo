@@ -12,29 +12,20 @@ namespace Service
 
 		public ShippingRate[] GetShippingRatesSync(decimal weight, string originZipCode, string destinationZipCode)
 		{
+			// create object that will store results
 			List<ShippingRate> rates = new List<ShippingRate>();
-			rates.AddRange(GetFedExRates(weight, originZipCode, destinationZipCode));
-			rates.AddRange(GetUpsRates(weight, originZipCode, destinationZipCode));
-			rates.AddRange(GetUspsRates(weight, originZipCode, destinationZipCode));
-			return rates.ToArray();
-		}
 
-		private static ShippingRate[] GetFedExRates(decimal weight, string originZipCode, string destinationZipCode)
-		{
+			// launch requests serially
 			using (WebResponse response = CreateFedExRequest(weight, originZipCode, destinationZipCode).GetResponse())
-				return GetFedExRates(response);
-		}
+				rates.AddRange(GetFedExRates(response));
 
-		private static ShippingRate[] GetUpsRates(decimal weight, string originZipCode, string destinationZipCode)
-		{
 			using (WebResponse response = CreateUpsRequest(weight, originZipCode, destinationZipCode).GetResponse())
-				return GetUpsRates(response);
-		}
+				rates.AddRange(GetUpsRates(response));
 
-		private static ShippingRate[] GetUspsRates(decimal weight, string originZipCode, string destinationZipCode)
-		{
 			using (WebResponse response = CreateUspsRequest(weight, originZipCode, destinationZipCode).GetResponse())
-				return GetUspsRates(response);
+				rates.AddRange(GetUspsRates(response));
+
+			return rates.ToArray();
 		}
 
 		#endregion
