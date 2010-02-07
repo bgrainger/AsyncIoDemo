@@ -43,6 +43,13 @@
     <Compile Include="ShippingRate.cs" />
     <Compile Include="ShippingRatesProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShippingRatesProvider.Impl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ext\Logos.Utility\src\Logos.Utility\Logos.Utility.csproj">
+      <Project>{F0BB7927-B2DB-4E37-9807-8E697CA09F32}</Project>
+      <Name>Logos.Utility</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
