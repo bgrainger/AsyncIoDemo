@@ -50,7 +50,7 @@ namespace Service
 			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).ContinueWith(t => GetUspsRates(t.Result));
 
 			// combine results when all are done
-			Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, t => TaskCallback(asyncResult, t));
+            Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks => asyncResult.Finish(tasks.SelectMany(t => t.Result).ToArray(), false));
 
 			// return IAsyncResult implementation to client
 			return asyncResult;
@@ -59,11 +59,6 @@ namespace Service
 		public ShippingRate[] EndGetShippingRatesAsync(IAsyncResult asyncResult)
 		{
 			return ((AsyncResult<ShippingRate[]>) asyncResult).EndInvoke();
-		}
-
-		private static void TaskCallback(AsyncResult<ShippingRate[]> asyncResult, Task<ShippingRate[]>[] tasks)
-		{
-			asyncResult.Finish(tasks.SelectMany(t => t.Result).ToArray(), false);
 		}
 
 		#endregion
