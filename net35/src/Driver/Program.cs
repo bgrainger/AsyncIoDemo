@@ -10,17 +10,6 @@ namespace Driver
 	{
 		static void Main(string[] args)
 		{
-			ApiKeys apiKeys = ApiKeys.Load();
-			if (apiKeys == null)
-			{
-				Console.Error.WriteLine("The API keys must be stored in the registry to run this program. Register at\n" +
-					"the shipping provider websites, then run the following commands:\n" +
-					"\n" +
-					@"reg add ""HKCU\Software\Bradley Grainger\AsyncIoDemo"" /v UspsUsername /d USER" + "\n" +
-					@"reg add ""HKCU\Software\Bradley Grainger\AsyncIoDemo"" /v UspsPassword /d PWD");
-				return;
-			}
-
 			Console.Write("Hosting service...");
 			using (ServiceHost host = CreateHost())
 			{
