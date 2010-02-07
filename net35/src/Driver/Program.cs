@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Service;
@@ -15,16 +16,28 @@ namespace Driver
 			{
 				Console.WriteLine("done.");
 
+				Random random = new Random();
+				const string origin = "98225";
+
 				using (ShippingRatesClient client = new ShippingRatesClient(CreateBinding(), s_baseUri))
 				{
-					foreach (ShippingRate rate in client.GetShippingRatesSync(1.1m, "98226", "90210"))
+					foreach (string destination in new[] { "90210", "12345", "10101" })
 					{
-						Console.WriteLine("Name: {0} -- Cost: {1:C}", rate.Name, rate.Cost);
-					}
+						decimal weight = random.Next(1, 160) / 16m;
+						Stopwatch sw;
+						int rateCount;
 
-					foreach (ShippingRate rate in client.GetShippingRatesAsync(1.1m, "98226", "90210"))
-					{
-						Console.WriteLine("Name: {0} -- Cost: {1:C}", rate.Name, rate.Cost);
+						Console.Write("Synchronous:  ");
+						sw = Stopwatch.StartNew();
+						rateCount = client.GetShippingRatesSync(weight, origin, destination).Length;
+						Console.WriteLine("{0} rates in {1}", rateCount, sw.Elapsed);
+
+						Console.Write("Asynchronous: ");
+						sw = Stopwatch.StartNew();
+						rateCount = client.GetShippingRatesAsync(weight, origin, destination).Length;
+						Console.WriteLine("{0} rates in {1}", rateCount, sw.Elapsed);
+
+						Console.WriteLine();
 					}
 				}
 
