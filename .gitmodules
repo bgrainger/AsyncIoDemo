@@ -1,0 +1,6 @@
+[submodule "net35/ext/Logos.Utility"]
+	path = net35/ext/Logos.Utility
+	url = git@github.com:LogosBible/Logos.Utility.git
+[submodule "net40/ext/Logos.Utility"]
+	path = net40/ext/Logos.Utility
+	url = git@github.com:LogosBible/Logos.Utility.git
