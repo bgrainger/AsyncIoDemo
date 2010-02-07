@@ -21,9 +21,15 @@ namespace Driver
 
 				using (ShippingRatesClient client = new ShippingRatesClient(CreateBinding(), s_baseUri))
 				{
+					decimal weight = 1.5m;
+					Console.WriteLine("Testing service with {0}lb package:", weight);
+					foreach (ShippingRate rate in client.GetShippingRatesSync(weight, "12345", "23456"))
+						Console.WriteLine("{0} -- {1:c}", rate.Name, rate.Cost);
+					Console.WriteLine();
+
 					foreach (string destination in new[] { "90210", "12345", "10101" })
 					{
-						decimal weight = random.Next(1, 160) / 16m;
+						weight = random.Next(1, 160) / 16m;
 						Stopwatch sw;
 						int rateCount;
 
