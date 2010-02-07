@@ -1,8 +1,10 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Logos.Utility.Threading;
+using System.Threading.Tasks;
 
 namespace Service
 {
@@ -36,17 +38,19 @@ namespace Service
 		{
 			// create object that will store results
 			AsyncResult<ShippingRate[]> asyncResult = new AsyncResult<ShippingRate[]>(callback, state);
-			ShippingRatesRequest request = new ShippingRatesRequest(asyncResult, 3);
 
 			// launch requests in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
-			fedExRequest.BeginGetResponse(ar => FedExCallback(request, fedExRequest, ar), null);
+			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).ContinueWith(t => GetFedExRates(t.Result));
 
 			WebRequest upsRequest = CreateUpsRequest(weight, originZipCode, destinationZipCode);
-			upsRequest.BeginGetResponse(ar => UpsCallback(request, upsRequest, ar), null);
+			Task<ShippingRate[]> upsTask = Task.Factory.FromAsync<WebResponse>(upsRequest.BeginGetResponse, upsRequest.EndGetResponse, null).ContinueWith(t => GetUpsRates(t.Result));
 
 			WebRequest uspsRequest = CreateUspsRequest(weight, originZipCode, destinationZipCode);
-			uspsRequest.BeginGetResponse(ar => UspsCallback(request, uspsRequest, ar), null);
+			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).ContinueWith(t => GetUspsRates(t.Result));
+
+			// combine results when all are done
+			Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, t => TaskCallback(asyncResult, t));
 
 			// return IAsyncResult implementation to client
 			return asyncResult;
@@ -57,56 +61,9 @@ namespace Service
 			return ((AsyncResult<ShippingRate[]>) asyncResult).EndInvoke();
 		}
 
-		private static void FedExCallback(ShippingRatesRequest request, WebRequest webRequest, IAsyncResult asyncResult)
+		private static void TaskCallback(AsyncResult<ShippingRate[]> asyncResult, Task<ShippingRate[]>[] tasks)
 		{
-			using (WebResponse response = webRequest.EndGetResponse(asyncResult))
-				request.AddRates(GetFedExRates(response));
-		}
-
-		private static void UpsCallback(ShippingRatesRequest request, WebRequest webRequest, IAsyncResult asyncResult)
-		{
-			using (WebResponse response = webRequest.EndGetResponse(asyncResult))
-				request.AddRates(GetUpsRates(response));
-		}
-
-		private static void UspsCallback(ShippingRatesRequest request, WebRequest webRequest, IAsyncResult asyncResult)
-		{
-			using (WebResponse response = webRequest.EndGetResponse(asyncResult))
-				request.AddRates(GetUspsRates(response));
-		}
-
-		/// <summary>
-		/// <see cref="ShippingRatesRequest"/> represents the state of one request to GetShippingRatesAsync.
-		/// </summary>
-		private class ShippingRatesRequest
-		{
-			public ShippingRatesRequest(AsyncResult<ShippingRate[]> asyncResult, int outstandingRequests)
-			{
-				m_lock = new object();
-				m_rates = new List<ShippingRate>();
-				m_asyncResult = asyncResult;
-				m_outstandingRequests = outstandingRequests;
-			}
-
-			/// <summary>
-			/// Adds shipping rates to this object's list of results.
-			/// </summary>
-			/// <param name="rates">The shipping rates to add.</param>
-			/// <remarks>This method is thread-safe.</remarks>
-			public void AddRates(IEnumerable<ShippingRate> rates)
-			{
-				lock (m_lock)
-				{
-					m_rates.AddRange(rates);
-					if (--m_outstandingRequests == 0)
-						m_asyncResult.Finish(m_rates.ToArray(), false);
-				}
-			}
-
-			readonly object m_lock;
-			readonly List<ShippingRate> m_rates;
-			readonly AsyncResult<ShippingRate[]> m_asyncResult;
-			int m_outstandingRequests;
+			asyncResult.Finish(tasks.SelectMany(t => t.Result).ToArray(), false);
 		}
 
 		#endregion
