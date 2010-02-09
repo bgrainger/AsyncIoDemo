@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Logos.Utility.Threading;
 
 namespace Service
 {
@@ -35,11 +36,6 @@ namespace Service
 
 		public IAsyncResult BeginGetShippingRatesAsync(decimal weight, string originZipCode, string destinationZipCode, AsyncCallback callback, object state)
 		{
-			// create object that will store results
-			TaskCompletionSource<ShippingRate[]> result = new TaskCompletionSource<ShippingRate[]>(state);
-			if (callback != null)
-				result.Task.ContinueWith(t => callback(t));
-
 			// launch requests in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
 			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).ContinueWith(t => GetFedExRates(t.Result));
@@ -51,8 +47,9 @@ namespace Service
 			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).ContinueWith(t => GetUspsRates(t.Result));
 
 			// combine results when all are done
-			Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks => result.SetResult(tasks.SelectMany(t => t.Result).ToArray()));
-			return result.Task;
+			Task<ShippingRate[]> resultTask = Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks => tasks.SelectMany(t => t.Result).ToArray());
+
+			return resultTask.CreateAsyncResult(callback, state);
 		}
 
 		public ShippingRate[] EndGetShippingRatesAsync(IAsyncResult asyncResult)
