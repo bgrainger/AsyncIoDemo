@@ -23,7 +23,7 @@ namespace Driver
 				{
 					decimal weight = 1.5m;
 					Console.WriteLine("Testing service with {0}lb package:", weight);
-					foreach (ShippingRate rate in client.GetShippingRatesSync(weight, "12345", "23456"))
+					foreach (ShippingRate rate in client.GetShippingRatesAsync(weight, "12345", "23456"))
 						Console.WriteLine("{0} -- {1:c}", rate.Name, rate.Cost);
 					Console.WriteLine();
 
