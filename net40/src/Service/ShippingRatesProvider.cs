@@ -38,13 +38,16 @@ namespace Service
 		{
 			// launch requests in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
-			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).ContinueWith(t => GetFedExRates(t.Result));
+			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetFedExRates));
 
 			WebRequest upsRequest = CreateUpsRequest(weight, originZipCode, destinationZipCode);
-			Task<ShippingRate[]> upsTask = Task.Factory.FromAsync<WebResponse>(upsRequest.BeginGetResponse, upsRequest.EndGetResponse, null).ContinueWith(t => GetUpsRates(t.Result));
+			Task<ShippingRate[]> upsTask = Task.Factory.FromAsync<WebResponse>(upsRequest.BeginGetResponse, upsRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetUpsRates));
 
 			WebRequest uspsRequest = CreateUspsRequest(weight, originZipCode, destinationZipCode);
-			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).ContinueWith(t => GetUspsRates(t.Result));
+			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetUspsRates));
 
 			// combine results when all are done
 			Task<ShippingRate[]> resultTask = Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks => tasks.SelectMany(t => t.Result).ToArray());
@@ -55,6 +58,12 @@ namespace Service
 		public ShippingRate[] EndGetShippingRatesAsync(IAsyncResult asyncResult)
 		{
 			return ((Task<ShippingRate[]>) asyncResult).Result;
+		}
+
+		private ShippingRate[] GetRates(Task<WebResponse> task, Func<WebResponse, ShippingRate[]> getRates)
+		{
+			using (task.Result)
+				return getRates(task.Result);
 		}
 
 		#endregion
