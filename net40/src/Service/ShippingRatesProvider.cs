@@ -50,7 +50,11 @@ namespace Service
 				ContinueWith(t => GetRates(t, GetUspsRates));
 
 			// combine results when all are done
-			Task<ShippingRate[]> resultTask = Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks => tasks.SelectMany(t => t.Result).ToArray());
+			Task<ShippingRate[]> resultTask = Task.Factory.ContinueWhenAll(new[] { fedExTask, upsTask, uspsTask }, tasks =>
+				{
+					Task.WaitAll(tasks);
+					return tasks.SelectMany(t => t.Result).ToArray();
+				});
 
 			return resultTask.CreateAsyncResult(callback, state);
 		}
