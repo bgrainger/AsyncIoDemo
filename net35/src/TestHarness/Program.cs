@@ -4,12 +4,52 @@ using System.Diagnostics;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Service;
+using System.Net;
+using System.Threading;
 
 namespace TestHarness
 {
 	class Program
 	{
 		static void Main(string[] args)
+		{
+			TestAsyncMethods();
+
+			TestWcfService();
+		}
+
+		private static void TestAsyncMethods()
+		{
+			Uri uri = new Uri("http://www.google.com");
+
+			// synchronous
+			WebRequest request = WebRequest.Create(uri);
+			using (WebResponse response = request.GetResponse())
+				Console.WriteLine("Downloaded {0}", uri);
+
+			// asynchronous -- polling
+			request = WebRequest.Create(uri);
+			IAsyncResult asyncResult = request.BeginGetResponse(null, null);
+			while (!asyncResult.IsCompleted)
+				Thread.Sleep(50);
+			using (WebResponse response = request.EndGetResponse(asyncResult))
+				Console.WriteLine("Downloaded {0}", uri);
+
+			// asynchronous -- waiting
+			request = WebRequest.Create(uri);
+			asyncResult = request.BeginGetResponse(null, null);
+			asyncResult.AsyncWaitHandle.WaitOne();
+			using (WebResponse response = request.EndGetResponse(asyncResult))
+				Console.WriteLine("Downloaded {0}", uri);
+
+			// asynchronous -- call EndXxx
+			request = WebRequest.Create(uri);
+			asyncResult = request.BeginGetResponse(null, null);
+			using (WebResponse response = request.EndGetResponse(asyncResult))
+				Console.WriteLine("Downloaded {0}", uri);
+		}
+
+		private static void TestWcfService()
 		{
 			Console.Write("Hosting service...");
 			using (ServiceHost host = CreateHost())
