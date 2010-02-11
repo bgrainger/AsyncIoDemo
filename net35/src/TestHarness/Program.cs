@@ -1,11 +1,11 @@
 ﻿
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using Service;
-using System.Net;
 using System.Threading;
+using Service;
 
 namespace TestHarness
 {
