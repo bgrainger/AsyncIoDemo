@@ -25,28 +25,36 @@ namespace TestHarness
 			// synchronous
 			WebRequest request = WebRequest.Create(uri);
 			using (WebResponse response = request.GetResponse())
-				Console.WriteLine("Downloaded {0}", uri);
+				Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
+
+			// asynchronous -- callback
+			request = WebRequest.Create(uri);
+			IAsyncResult asyncResult = request.BeginGetResponse(ar =>
+			{
+				using (WebResponse response = ((WebRequest) ar.AsyncState).EndGetResponse(ar))
+					Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
+			}, request);
 
 			// asynchronous -- polling
 			request = WebRequest.Create(uri);
-			IAsyncResult asyncResult = request.BeginGetResponse(null, null);
+			asyncResult = request.BeginGetResponse(null, null);
 			while (!asyncResult.IsCompleted)
 				Thread.Sleep(50);
 			using (WebResponse response = request.EndGetResponse(asyncResult))
-				Console.WriteLine("Downloaded {0}", uri);
+				Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
 
 			// asynchronous -- waiting
 			request = WebRequest.Create(uri);
 			asyncResult = request.BeginGetResponse(null, null);
 			asyncResult.AsyncWaitHandle.WaitOne();
 			using (WebResponse response = request.EndGetResponse(asyncResult))
-				Console.WriteLine("Downloaded {0}", uri);
+				Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
 
 			// asynchronous -- call EndXxx
 			request = WebRequest.Create(uri);
 			asyncResult = request.BeginGetResponse(null, null);
 			using (WebResponse response = request.EndGetResponse(asyncResult))
-				Console.WriteLine("Downloaded {0}", uri);
+				Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
 		}
 
 		private static void TestWcfService()
