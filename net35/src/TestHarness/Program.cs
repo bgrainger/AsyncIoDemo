@@ -5,7 +5,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Service;
 
-namespace Driver
+namespace TestHarness
 {
 	class Program
 	{

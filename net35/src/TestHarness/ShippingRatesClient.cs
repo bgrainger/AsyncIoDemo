@@ -5,7 +5,7 @@ using System.ServiceModel.Channels;
 using Logos.Utility.ServiceModel;
 using Service;
 
-namespace Driver
+namespace TestHarness
 {
 	/// <summary>
 	/// <see cref="ShippingRatesClient"/> encapsulates a ChannelFactory and a Channel for the

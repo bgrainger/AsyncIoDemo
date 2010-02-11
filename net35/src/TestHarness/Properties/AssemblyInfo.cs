@@ -2,11 +2,11 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Driver")]
+[assembly: AssemblyTitle("TestHarness")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Async I/O Demo")]
+[assembly: AssemblyProduct("Async I/O Demo Test Harness")]
 [assembly: AssemblyCopyright("Copyright 2010 Bradley Grainger")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
