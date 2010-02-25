@@ -174,6 +174,8 @@ namespace TestHarness
 			{
 				// read response from server
 			}
+
+			/***** Other: Sockets, Serial Ports, SslStream *****/
 		}
 
 		private static ServiceHost CreateHost()
