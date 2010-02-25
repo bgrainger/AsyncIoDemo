@@ -1,9 +1,13 @@
 ﻿
 using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text;
 using System.Threading;
 using Service;
 
@@ -97,6 +101,78 @@ namespace TestHarness
 
 				Console.Write("Press Enter to exit.");
 				Console.ReadLine();
+			}
+		}
+
+		private static void SampleAsyncMethods()
+		{
+			IAsyncResult asyncResult;
+
+			/***** SQL Connection *****/
+			// NOTE: "Async=true" setting required for asynchronous operations
+			using (SqlConnection connection = new SqlConnection(@"Async=true;Server=SERVER;Database=DATABASE;Integrated Security=true"))
+			{
+				connection.Open();
+				using (SqlCommand cmd = new SqlCommand("SELECT UserId, Name, LastLogIn FROM Users WHERE Email = 'test@example.com'", connection))
+				{
+					asyncResult = cmd.BeginExecuteReader();
+					// ... query executes asynchronously in background ...
+					using (IDataReader reader = cmd.EndExecuteReader(asyncResult))
+					{
+						// NOTE: The DbAsyncResult object returned by BeginExecuteReader always creates a ManualResetEvent, but
+						// never closes it; after calling EndExecuteReader, the AsyncWaitHandle property is still valid, so we close it explicitly.
+						asyncResult.AsyncWaitHandle.Close();
+
+						while (reader.Read())
+						{
+							// do stuff
+						}
+					}
+				}
+
+				using (SqlCommand cmd = new SqlCommand("UPDATE Users SET LastLogIn = GETUTCDATE() WHERE UserId = 1", connection))
+				{
+					asyncResult = cmd.BeginExecuteNonQuery();
+					// ... query executes asynchronously in background ...
+					int rowsAffected = cmd.EndExecuteNonQuery(asyncResult);
+
+					// NOTE: The DbAsyncResult object returned by BeginExecuteNonQuery always creates a ManualResetEvent, but
+					// never closes it; after calling EndExecuteReader, the AsyncWaitHandle property is still valid, so we close it explicitly.
+					asyncResult.AsyncWaitHandle.Close();
+				}
+			}
+
+			/***** File Operations *****/
+			// NOTE: FileOptions.Asynchronous flag required for asynchronous operations 
+			using (Stream stream = new FileStream(@"C:\Temp\test.dat", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096,
+				FileOptions.Asynchronous))
+			{
+				byte[] buffer = new byte[65536];
+				asyncResult = stream.BeginRead(buffer, 0, buffer.Length, null, null);
+				// ... disk read executes asynchronously in background ...
+				int bytesRead = stream.EndRead(asyncResult);
+			}
+
+			/***** HTTP Operation *****/
+			// NOTE: DNS operations are synchronous, and will block!
+			WebRequest request = WebRequest.Create(new Uri(@"http://www.example.com/sample/page"));
+			request.Method = "POST";
+			request.ContentType = "application/x-www-form-urlencoded";
+
+			asyncResult = request.BeginGetRequestStream(null, null);
+			// ... connection to server opened in background ...
+			using (Stream stream = request.EndGetRequestStream(asyncResult))
+			{
+				byte[] bytes = Encoding.UTF8.GetBytes("Sample request");
+				stream.Write(bytes, 0, bytes.Length);
+			}
+
+			asyncResult = request.BeginGetResponse(null, null);
+			// ... web request executes in background ...
+			using (WebResponse response = request.EndGetResponse(asyncResult))
+			using (Stream stream = response.GetResponseStream())
+			{
+				// read response from server
 			}
 		}
 
