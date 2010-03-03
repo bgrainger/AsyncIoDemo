@@ -21,7 +21,7 @@ namespace TestHarness
 
 		private static void TestAsyncMethods()
 		{
-			Uri uri = new Uri("http://www.google.com");
+			Uri uri = new Uri("http://code.logos.com/blog/");
 
 			// synchronous
 			WebRequest request = WebRequest.Create(uri);
