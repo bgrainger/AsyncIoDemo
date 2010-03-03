@@ -109,7 +109,7 @@ namespace TestHarness
 			IAsyncResult asyncResult;
 
 			/***** SQL Connection *****/
-			// NOTE: "Async=true" setting required for asynchronous operations
+			// NOTE: "Async=true" setting required for asynchronous operations.
 			using (SqlConnection connection = new SqlConnection(@"Async=true;Server=SERVER;Database=DATABASE;Integrated Security=true"))
 			{
 				connection.Open();
@@ -119,7 +119,7 @@ namespace TestHarness
 					// ... query executes asynchronously in background ...
 					using (IDataReader reader = cmd.EndExecuteReader(asyncResult))
 					{
-						// NOTE: The DbAsyncResult object returned by BeginExecuteReader always creates a ManualResetEvent, but
+						// WARNING: The DbAsyncResult object returned by BeginExecuteReader always creates a ManualResetEvent, but
 						// never closes it; after calling EndExecuteReader, the AsyncWaitHandle property is still valid, so we close it explicitly.
 						asyncResult.AsyncWaitHandle.Close();
 
@@ -136,14 +136,14 @@ namespace TestHarness
 					// ... query executes asynchronously in background ...
 					int rowsAffected = cmd.EndExecuteNonQuery(asyncResult);
 
-					// NOTE: The DbAsyncResult object returned by BeginExecuteNonQuery always creates a ManualResetEvent, but
+					// WARNING: The DbAsyncResult object returned by BeginExecuteNonQuery always creates a ManualResetEvent, but
 					// never closes it; after calling EndExecuteReader, the AsyncWaitHandle property is still valid, so we close it explicitly.
 					asyncResult.AsyncWaitHandle.Close();
 				}
 			}
 
 			/***** File Operations *****/
-			// NOTE: FileOptions.Asynchronous flag required for asynchronous operations 
+			// NOTE: FileOptions.Asynchronous flag required for asynchronous operations.
 			using (Stream stream = new FileStream(@"C:\Temp\test.dat", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096,
 				FileOptions.Asynchronous))
 			{
@@ -154,7 +154,7 @@ namespace TestHarness
 			}
 
 			/***** HTTP Operation *****/
-			// NOTE: DNS operations are synchronous, and will block!
+			// WARNING: DNS operations are synchronous, and will block!
 			WebRequest request = WebRequest.Create(new Uri(@"http://www.example.com/sample/page"));
 			request.Method = "POST";
 			request.ContentType = "application/x-www-form-urlencoded";
@@ -167,6 +167,7 @@ namespace TestHarness
 				stream.Write(bytes, 0, bytes.Length);
 			}
 
+			// WARNING: WebRequest will swallow any exceptions thrown from the AsyncCallback passed to BeginGetResponse.
 			asyncResult = request.BeginGetResponse(null, null);
 			// ... web request executes in background ...
 			using (WebResponse response = request.EndGetResponse(asyncResult))
@@ -174,6 +175,12 @@ namespace TestHarness
 			{
 				// read response from server
 			}
+
+			/***** DNS hostname resolution *****/
+			// WARNING: Doesn't truly use async I/O, but simply queues the request to a ThreadPool thread.
+			asyncResult = Dns.BeginGetHostEntry("www.example.com", null, null);
+			// ... DNS lookup executes in background
+			IPHostEntry entry = Dns.EndGetHostEntry(asyncResult);
 
 			/***** Other: Sockets, Serial Ports, SslStream *****/
 		}
