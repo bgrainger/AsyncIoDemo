@@ -164,7 +164,8 @@ namespace TestHarness
 			using (Stream stream = request.EndGetRequestStream(asyncResult))
 			{
 				byte[] bytes = Encoding.UTF8.GetBytes("Sample request");
-				stream.Write(bytes, 0, bytes.Length);
+				asyncResult = stream.BeginWrite(bytes, 0, bytes.Length, null, null);
+				stream.EndWrite(asyncResult);
 			}
 
 			// WARNING: WebRequest will swallow any exceptions thrown from the AsyncCallback passed to BeginGetResponse.
@@ -174,6 +175,8 @@ namespace TestHarness
 			using (Stream stream = response.GetResponseStream())
 			{
 				// read response from server
+				// WARNING: This code should also use asynchronous operations (BeginRead, EndRead); "Using synchronous calls
+				//   in asynchronous callback methods can result in severe performance penalties." (MSDN)
 			}
 
 			/***** DNS hostname resolution *****/
