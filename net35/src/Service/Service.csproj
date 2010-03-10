@@ -48,6 +48,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fake\WebRequest.cs" />
+    <Compile Include="Fake\WebResponse.cs" />
     <Compile Include="IShippingRatesProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShippingRate.cs" />

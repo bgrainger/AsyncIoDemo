@@ -10,6 +10,10 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using Service;
+#if FAKE
+using WebRequest = Service.Fake.WebRequest;
+using WebResponse = Service.Fake.WebResponse;
+#endif
 
 namespace TestHarness
 {

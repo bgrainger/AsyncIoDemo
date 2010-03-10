@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Logos.Utility.Threading;
+#if FAKE
+using WebRequest = Service.Fake.WebRequest;
+using WebResponse = Service.Fake.WebResponse;
+#endif
 
 namespace Service
 {
