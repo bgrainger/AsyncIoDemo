@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -42,6 +43,39 @@ namespace TestHarness
 			task = Task<WebResponse>.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
 			using (WebResponse response = task.Result)
 				Console.WriteLine("Downloaded {0} on thread {1}", uri, Thread.CurrentThread.ManagedThreadId);
+		}
+
+		private static void TaskDemo()
+		{
+			Uri uri = new Uri("http://code.logos.com/blog/");
+			Task<byte[]> download = DownloadWebPage(uri);
+
+			using (FileStream stream = new FileStream(@"C:\temp\test.dat", FileMode.Create))
+			using (StreamWriter writer = new StreamWriter(stream))
+			{
+				writer.WriteLine("The contents of {0} are:", uri.AbsoluteUri);
+				writer.WriteLine();
+				writer.Flush();
+
+				byte[] data = download.Result;
+				stream.Write(data, 0, data.Length);
+			}
+		}
+
+		private static Task<byte[]> DownloadWebPage(Uri uri)
+		{
+			WebRequest request = WebRequest.Create(uri);
+			Task<WebResponse> task = Task<WebResponse>.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
+			return task.ContinueWith<byte[]>(t =>
+				{
+					using (WebResponse response = t.Result)
+					using (Stream stream = response.GetResponseStream())
+					using (MemoryStream memoryStream = new MemoryStream())
+					{
+						stream.CopyTo(memoryStream);
+						return memoryStream.ToArray();
+					}
+				});
 		}
 
 		private static void TestWcfService()
