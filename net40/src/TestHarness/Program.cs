@@ -22,7 +22,10 @@ namespace TestHarness
 			TestAsyncMethods();
 
 			TestWcfService();
-		}
+
+            Console.Write("Press Enter to exit.");
+            Console.ReadLine();
+        }
 
 		private static void TestAsyncMethods()
 		{
@@ -119,9 +122,6 @@ namespace TestHarness
 						Console.WriteLine();
 					}
 				}
-
-				Console.Write("Press Enter to exit.");
-				Console.ReadLine();
 			}
 		}
 
