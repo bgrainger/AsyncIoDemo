@@ -2,6 +2,10 @@
 using System;
 using System.Net;
 using System.Threading;
+#if FAKE
+using WebRequest = Service.Fake.WebRequest;
+using WebResponse = Service.Fake.WebResponse;
+#endif
 
 namespace Service
 {

@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fake\WebRequest.cs" />
+    <Compile Include="Fake\WebResponse.cs" />
     <Compile Include="IShippingRatesProvider.cs" />
     <Compile Include="ShippingRate.cs" />
     <Compile Include="ShippingRatesProvider.cs" />

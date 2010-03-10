@@ -5,6 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Logos.Utility.Threading;
+#if FAKE
+using WebRequest = Service.Fake.WebRequest;
+using WebResponse = Service.Fake.WebResponse;
+#endif
 
 namespace Service
 {
