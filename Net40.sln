@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "net40\src\Service\Service.csproj", "{D31543FA-81A4-456D-B9C4-9F9CB514C1C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Driver", "net40\src\TestHarness\TestHarness.csproj", "{50FCD900-90BA-4307-8330-3E565146359F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "net40\src\TestHarness\TestHarness.csproj", "{50FCD900-90BA-4307-8330-3E565146359F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logos.Utility", "net40\ext\Logos.Utility\src\Logos.Utility\Logos.Utility.csproj", "{F0BB7927-B2DB-4E37-9807-8E697CA09F32}"
 EndProject
@@ -32,7 +32,8 @@ Global
 		{50FCD900-90BA-4307-8330-3E565146359F}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Debug|x86.ActiveCfg = Debug|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Debug|x86.Build.0 = Debug|x86
-		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Any CPU.ActiveCfg = Release|x86
+		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|Mixed Platforms.Build.0 = Release|x86
 		{50FCD900-90BA-4307-8330-3E565146359F}.Release|x86.ActiveCfg = Release|x86
