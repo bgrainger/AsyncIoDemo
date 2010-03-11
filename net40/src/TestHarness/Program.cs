@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -103,7 +104,7 @@ namespace TestHarness
 						Console.WriteLine("{0} -- {1:c}", rate.Name, rate.Cost);
 					Console.WriteLine();
 
-					foreach (string destination in new[] { "90210", "12345", "10101" })
+					foreach (string destination in Enumerable.Repeat("12345", 3))
 					{
 						weight = random.Next(1, 160) / 16m;
 						Stopwatch sw;
