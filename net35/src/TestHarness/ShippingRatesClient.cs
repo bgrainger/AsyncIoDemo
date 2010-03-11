@@ -25,6 +25,12 @@ namespace TestHarness
 			return m_channel.GetShippingRatesSync(weight, originZipCode, destinationZipCode);
 		}
 
+		public ShippingRate[] GetShippingRatesSyncParallel(decimal weight, string originZipCode, string destinationZipCode)
+		{
+			VerifyNotDisposed();
+			return m_channel.GetShippingRatesSyncParallel(weight, originZipCode, destinationZipCode);
+		}
+
 		public ShippingRate[] GetShippingRatesAsync(decimal weight, string originZipCode, string destinationZipCode)
 		{
 			VerifyNotDisposed();

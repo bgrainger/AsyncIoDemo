@@ -12,14 +12,14 @@ namespace Service
 {
 	public partial class ShippingRatesProvider : IShippingRatesProvider
 	{
-		#region Synchronous Implementation
+		#region Synchronous Implementations
 
 		public ShippingRate[] GetShippingRatesSync(decimal weight, string originZipCode, string destinationZipCode)
 		{
 			// create object that will store results
 			List<ShippingRate> rates = new List<ShippingRate>();
 
-			// launch requests serially
+			// launch requests serially, waiting for each one
 			using (WebResponse response = CreateFedExRequest(weight, originZipCode, destinationZipCode).GetResponse())
 				rates.AddRange(GetFedExRates(response));
 
@@ -27,6 +27,35 @@ namespace Service
 				rates.AddRange(GetUpsRates(response));
 
 			using (WebResponse response = CreateUspsRequest(weight, originZipCode, destinationZipCode).GetResponse())
+				rates.AddRange(GetUspsRates(response));
+
+			return rates.ToArray();
+		}
+
+		public ShippingRate[] GetShippingRatesSyncParallel(decimal weight, string originZipCode, string destinationZipCode)
+		{
+			// create object that will store results
+			List<ShippingRate> rates = new List<ShippingRate>();
+
+			// launch asynchronous requests, that will complete in parallel
+			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
+			IAsyncResult fedExResult = fedExRequest.BeginGetResponse(null, null);
+
+			WebRequest upsRequest = CreateUpsRequest(weight, originZipCode, destinationZipCode);
+			IAsyncResult upsResult = upsRequest.BeginGetResponse(null, null);
+
+			WebRequest uspsRequest = CreateUspsRequest(weight, originZipCode, destinationZipCode);
+			IAsyncResult uspsResult = uspsRequest.BeginGetResponse(null, null);
+
+			// wait for all requests; each EndGetResponse will block if the request hasn't completed
+
+			using (WebResponse response = fedExRequest.EndGetResponse(fedExResult))
+				rates.AddRange(GetFedExRates(response));
+
+			using (WebResponse response = upsRequest.EndGetResponse(upsResult))
+				rates.AddRange(GetUpsRates(response));
+
+			using (WebResponse response = uspsRequest.EndGetResponse(uspsResult))
 				rates.AddRange(GetUspsRates(response));
 
 			return rates.ToArray();
@@ -42,7 +71,7 @@ namespace Service
 			AsyncResult<ShippingRate[]> asyncResult = new AsyncResult<ShippingRate[]>(callback, state);
 			ShippingRatesRequest request = new ShippingRatesRequest(asyncResult, 3);
 
-			// launch requests in parallel
+			// launch asynchronous requests, that will complete in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
 			fedExRequest.BeginGetResponse(ar => FedExCallback(request, fedExRequest, ar), null);
 
