@@ -80,6 +80,6 @@ namespace Service
 			};
 		}
 
-		const int c_demoDelay = 300;
+		const int c_demoDelay = 0;
 	}
 }
