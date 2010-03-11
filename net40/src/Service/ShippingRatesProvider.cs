@@ -14,14 +14,14 @@ namespace Service
 {
 	public partial class ShippingRatesProvider : IShippingRatesProvider
 	{
-		#region Synchronous Implementation
+		#region Synchronous Implementations
 
 		public ShippingRate[] GetShippingRatesSync(decimal weight, string originZipCode, string destinationZipCode)
 		{
 			// create object that will store results
 			List<ShippingRate> rates = new List<ShippingRate>();
 
-			// launch requests serially
+			// launch requests serially, waiting for each one
 			using (WebResponse response = CreateFedExRequest(weight, originZipCode, destinationZipCode).GetResponse())
 				rates.AddRange(GetFedExRates(response));
 
@@ -34,13 +34,33 @@ namespace Service
 			return rates.ToArray();
 		}
 
+		public ShippingRate[] GetShippingRatesSyncParallel(decimal weight, string originZipCode, string destinationZipCode)
+		{
+			// launch asynchronous requests, which will complete in parallel
+			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
+			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetFedExRates));
+
+			WebRequest upsRequest = CreateUpsRequest(weight, originZipCode, destinationZipCode);
+			Task<ShippingRate[]> upsTask = Task.Factory.FromAsync<WebResponse>(upsRequest.BeginGetResponse, upsRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetUpsRates));
+
+			WebRequest uspsRequest = CreateUspsRequest(weight, originZipCode, destinationZipCode);
+			Task<ShippingRate[]> uspsTask = Task.Factory.FromAsync<WebResponse>(uspsRequest.BeginGetResponse, uspsRequest.EndGetResponse, null).
+				ContinueWith(t => GetRates(t, GetUspsRates));
+
+			// combine results when all are done
+			var tasks = new[] { fedExTask, upsTask, uspsTask };
+			Task.WaitAll(tasks);
+			return tasks.SelectMany(t => t.Result).ToArray();
+		}
 		#endregion
 
 		#region Asynchronous Implementation
 
 		public IAsyncResult BeginGetShippingRatesAsync(decimal weight, string originZipCode, string destinationZipCode, AsyncCallback callback, object state)
 		{
-			// launch requests in parallel
+			// launch asynchronous requests, which will complete in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
 			Task<ShippingRate[]> fedExTask = Task.Factory.FromAsync<WebResponse>(fedExRequest.BeginGetResponse, fedExRequest.EndGetResponse, null).
 				ContinueWith(t => GetRates(t, GetFedExRates));

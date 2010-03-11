@@ -109,12 +109,17 @@ namespace TestHarness
 						Stopwatch sw;
 						int rateCount;
 
-						Console.Write("Synchronous:  ");
+						Console.Write("Synchronous:   ");
 						sw = Stopwatch.StartNew();
 						rateCount = client.GetShippingRatesSync(weight, origin, destination).Length;
 						Console.WriteLine("{0} rates in {1}", rateCount, sw.Elapsed);
 
-						Console.Write("Asynchronous: ");
+						Console.Write("Sync Parallel: ");
+						sw = Stopwatch.StartNew();
+						rateCount = client.GetShippingRatesSyncParallel(weight, origin, destination).Length;
+						Console.WriteLine("{0} rates in {1}", rateCount, sw.Elapsed);
+
+						Console.Write("Asynchronous:  ");
 						sw = Stopwatch.StartNew();
 						rateCount = client.GetShippingRatesAsync(weight, origin, destination).Length;
 						Console.WriteLine("{0} rates in {1}", rateCount, sw.Elapsed);
