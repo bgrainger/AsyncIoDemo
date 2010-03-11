@@ -37,7 +37,7 @@ namespace Service
 			// create object that will store results
 			List<ShippingRate> rates = new List<ShippingRate>();
 
-			// launch asynchronous requests, that will complete in parallel
+			// launch asynchronous requests, which will complete in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
 			IAsyncResult fedExResult = fedExRequest.BeginGetResponse(null, null);
 
@@ -71,7 +71,7 @@ namespace Service
 			AsyncResult<ShippingRate[]> asyncResult = new AsyncResult<ShippingRate[]>(callback, state);
 			ShippingRatesRequest request = new ShippingRatesRequest(asyncResult, 3);
 
-			// launch asynchronous requests, that will complete in parallel
+			// launch asynchronous requests, which will complete in parallel
 			WebRequest fedExRequest = CreateFedExRequest(weight, originZipCode, destinationZipCode);
 			fedExRequest.BeginGetResponse(ar => FedExCallback(request, fedExRequest, ar), null);
 
